@@ -1,0 +1,25 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/react-bootstrap-test/node_modules
+/react-bootstrap-test/.pnp
+/react-bootstrap-test/.pnp.js
+
+# testing
+/react-bootstrap-test/coverage
+
+# production
+/react-bootstrap-test/build
+
+# misc
+/react-bootstrap-test/.DS_Store
+/react-bootstrap-test/.env.local
+/react-bootstrap-test/.env.development.local
+/react-bootstrap-test/.env.test.local
+/react-bootstrap-test/.env.production.local
+
+/react-bootstrap-test/npm-debug.log*
+/react-bootstrap-test/yarn-debug.log*
+/react-bootstrap-test/yarn-error.log*
+
+/backend/binary-store
