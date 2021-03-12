@@ -3,6 +3,7 @@ const express = require("express");
 const fs = require("fs");
 const https = require("https");
 const mongoose = require("mongoose");
+const fetch = require("node-fetch");
 const app = express();
 
 mongoose
@@ -39,12 +40,14 @@ function getSoundFile(text) {
 app.use(express.json());
 
 app.get("/notifier/sound/", (req, res) => {
+  console.log("sound request");
   res.download(req.query.file);
 });
 
 app.post("/notifier/play/", (req, res) => {
   console.log(req.body);
   res.json({ status: "ok" });
+  fetch(`http://192.168.1.162/?file=${req.body.file}`);
 });
 
 app.get("/notifier/list/", (req, res) => {

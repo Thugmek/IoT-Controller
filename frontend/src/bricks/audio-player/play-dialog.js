@@ -21,7 +21,7 @@ function PlayDialog(props, ref) {
   }
 
   const handleClose = () => setShow(false);
-  const soundUrl = `http://localhost:2000/notifier/sound?file=${data.file}`;
+  const soundUrl = `http://192.168.1.142:2000/notifier/sound?file=${data.file}`;
   return (
     <Modal show={show} onHide={handleClose}>
       <Sound

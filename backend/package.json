@@ -11,6 +11,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "google-tts-api": "^2.0.1",
-    "mongoose": "^5.11.19"
+    "mongoose": "^5.11.19",
+    "node-fetch": "^2.6.1"
   }
 }
