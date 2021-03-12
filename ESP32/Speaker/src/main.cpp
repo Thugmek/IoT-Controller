@@ -4,6 +4,11 @@
 #include "AudioGeneratorMP3.h"
 #include "AudioOutputI2SNoDAC.h"
 #include <WebServer.h>
+#include <PubSubClient.h>
+#include <ArduinoJson.h>
+#include "wifiController.h"
+#include "ota.h"
+
 #include "define.h" //SSID and password stored here
 
 #ifndef SSID
@@ -14,8 +19,14 @@
 #define PASSWORD "Your-Password"
 #endif
 
+const char *mqtt_server = "192.168.1.240";
+
 const char *ssid = SSID;
 const char *password = PASSWORD;
+
+//OTA ota = OTA();
+WiFiClient espClient;
+PubSubClient client(espClient);
 
 WebServer server(80);
 
@@ -25,6 +36,8 @@ AudioFileSourceBuffer *buff;
 AudioOutputI2SNoDAC *out;
 
 String nextUrl = "";
+
+unsigned long timeout = millis();
 
 void playHttp(char *url)
 {
@@ -38,6 +51,8 @@ void playHttp(char *url)
 
 void handlePlay()
 {
+  Serial.print("Play request: ");
+  Serial.println(server.arg(0));
   String message = "";
   message += "\nPlaying: ";
   message += server.arg(0);
@@ -46,30 +61,71 @@ void handlePlay()
   playHttp("http://192.168.1.142:2000/notifier/sound?file=binary-store/bell.mp3");
 }
 
+void sendMQTTLog(String str)
+{
+  StaticJsonDocument<200> doc;
+  doc["log"] = str;
+
+  int len = measureJsonPretty(doc);
+  char buf[len + 1];
+  serializeJsonPretty(doc, buf, len + 1);
+
+  client.publish("bedroom/speaker/log", buf);
+}
+
+void callback(String topic, byte *message, unsigned int length)
+{
+  char json[length];
+  for (unsigned int i = 0; i < length; i++)
+  {
+    json[i] = (char)message[i];
+  }
+
+  StaticJsonDocument<200> doc;
+  DeserializationError error = deserializeJson(doc, json);
+
+  if (!error)
+  {
+    if (topic == "bedroom/speaker")
+    {
+      String path = doc["file"];
+      if (doc.containsKey("volume"))
+        out->SetGain(doc["volume"]);
+      nextUrl = ("http://192.168.1.142:2000/notifier/sound?file=" + path);
+      playHttp("http://192.168.1.142:2000/notifier/sound?file=binary-store/bell.mp3");
+    }
+  }
+}
+
+void sendMQTTInfo()
+{
+  if (timeout < millis())
+  {
+    StaticJsonDocument<200> doc;
+    doc["device"] = "Speaker";
+    doc["IP"] = WiFi.localIP().toString();
+    doc["status"] = "running";
+    doc["uptime"] = millis();
+
+    int len = measureJsonPretty(doc);
+    char buf[len + 1];
+    serializeJsonPretty(doc, buf, len + 1);
+
+    client.publish("bedroom/speaker/sys", buf);
+    timeout = millis() + 3000;
+  }
+}
+
 void setup()
 {
-  Serial.begin(115200);
-  delay(10);
+
+  WifiController::init();
+  OTA::init();
 
   // We start by connecting to a WiFi network
 
-  Serial.println();
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+  client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
 
   audioLogger = &Serial;
   digitalWrite(22, LOW);
@@ -77,7 +133,7 @@ void setup()
   file = new AudioFileSourceICYStream("");
   buff = new AudioFileSourceBuffer(file, 4092);
   out = new AudioOutputI2SNoDAC();
-  out->SetGain(0.01f);
+  out->SetGain(0.05f);
   mp3 = new AudioGeneratorMP3();
   //playHttp("http://192.168.1.142:2000/notifier/sound?file=binary-store/file-1615381255315.mp3");
 
@@ -91,6 +147,20 @@ void loop()
 {
   static int lastms = 0;
   server.handleClient();
+  OTA::handle();
+
+  if (!client.connected())
+  {
+    client.connect("Speaker");
+    client.subscribe("bedroom/speaker");
+  }
+
+  if (!client.loop())
+  {
+    client.connect("Speaker");
+    client.subscribe("bedroom/speaker");
+  }
+
   if (mp3->isRunning())
   {
     if (millis() - lastms > 1000)
@@ -116,4 +186,6 @@ void loop()
       playHttp(urlBuff);
     }
   }
+
+  sendMQTTInfo();
 }
