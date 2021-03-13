@@ -61,18 +61,6 @@ void handlePlay()
   playHttp("http://192.168.1.142:2000/notifier/sound?file=binary-store/bell.mp3");
 }
 
-void sendMQTTLog(String str)
-{
-  StaticJsonDocument<200> doc;
-  doc["log"] = str;
-
-  int len = measureJsonPretty(doc);
-  char buf[len + 1];
-  serializeJsonPretty(doc, buf, len + 1);
-
-  client.publish("bedroom/speaker/log", buf);
-}
-
 void callback(String topic, byte *message, unsigned int length)
 {
   char json[length];
@@ -134,6 +122,7 @@ void setup()
   buff = new AudioFileSourceBuffer(file, 4092);
   out = new AudioOutputI2SNoDAC();
   out->SetGain(0.05f);
+  out->SetOversampling(64);
   mp3 = new AudioGeneratorMP3();
   //playHttp("http://192.168.1.142:2000/notifier/sound?file=binary-store/file-1615381255315.mp3");
 

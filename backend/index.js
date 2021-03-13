@@ -4,7 +4,13 @@ const fs = require("fs");
 const https = require("https");
 const mongoose = require("mongoose");
 const fetch = require("node-fetch");
+var mqtt = require("mqtt");
+var client = mqtt.connect("mqtt://192.168.1.240");
 const app = express();
+
+client.on("connect", function () {
+  console.log("MQTT connected");
+});
 
 mongoose
   .connect("mongodb://localhost:27017/app", { useNewUrlParser: true })
@@ -47,7 +53,14 @@ app.get("/notifier/sound/", (req, res) => {
 app.post("/notifier/play/", (req, res) => {
   console.log(req.body);
   res.json({ status: "ok" });
-  fetch(`http://192.168.1.162/?file=${req.body.file}`);
+  //fetch(`http://192.168.1.162/?file=${req.body.file}`);
+  client.publish(
+    "bedroom/speaker",
+    JSON.stringify({
+      file: req.body.file,
+      volume: 0.05,
+    })
+  );
 });
 
 app.get("/notifier/list/", (req, res) => {
