@@ -1,7 +1,13 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { Home, Info, Notifications, Whatshot } from "@material-ui/icons";
+import {
+  Home,
+  Info,
+  Notifications,
+  Whatshot,
+  Fireplace,
+} from "@material-ui/icons";
 
 function Left() {
   return (
@@ -20,7 +26,7 @@ function Left() {
       </Link>
       <Link to="/fireplace" className="nav-link">
         <Button className="btn-block" disabled>
-          <Whatshot />
+          <Fireplace />
           Kotel
         </Button>
       </Link>
