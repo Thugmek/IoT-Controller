@@ -9,6 +9,8 @@
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.8.1",
     "bootstrap": "^4.6.0",
+    "dateformat": "^4.5.1",
+    "http-proxy-middleware": "^1.0.6",
     "react": "^17.0.1",
     "react-bootstrap": "^1.5.1",
     "react-dom": "^17.0.1",
@@ -17,6 +19,7 @@
     "react-scripts": "4.0.3",
     "react-sound": "^1.2.0",
     "serve": "^11.3.2",
+    "victory": "^35.4.11",
     "web-vitals": "^1.1.0"
   },
   "scripts": {
@@ -45,4 +48,3 @@
   },
   "proxy": "http://192.168.1.142:2000/"
 }
-

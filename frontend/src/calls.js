@@ -37,6 +37,11 @@ let Calls = {
     let uri = Calls.getCommandUri("notifier/play/");
     return Calls.call("POST", uri, dtoIn);
   },
+
+  loadFireplace(dtoIn) {
+    let uri = Calls.getCommandUri("boiler/get/");
+    return Calls.call("GET", uri, dtoIn);
+  },
 };
 
 export default Calls;

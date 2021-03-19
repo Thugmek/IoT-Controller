@@ -1,2 +1,2 @@
-#define SSID "TechGuiLivesHere"
-#define PASSWORD "Kocickasatan.1"
+#define SSID ""
+#define PASSWORD "" 

@@ -10,8 +10,10 @@ import Home from "./routes/home";
 import Left from "./left";
 import About from "./routes/about";
 import MessagePlayer from "./routes/audio-player";
+import Fireplace from "./routes/fireplace";
 
 function App() {
+  console.log(window.location.hostname);
   return (
     <div className="App">
       <Router>
@@ -31,6 +33,7 @@ function App() {
               <Route path="/home" component={Home} />
               <Route path="/about" component={About} />
               <Route path="/messagePlayer" component={MessagePlayer} />
+              <Route path="/fireplace" />
             </Switch>
           </Col>
         </Row>
