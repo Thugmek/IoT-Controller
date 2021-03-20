@@ -19,7 +19,7 @@
 #define PASSWORD "Your-Password"
 #endif
 
-const char *mqtt_server = "192.168.1.240";
+const char *mqtt_server = "192.168.1.241";
 
 const char *ssid = SSID;
 const char *password = PASSWORD;
@@ -57,8 +57,8 @@ void handlePlay()
   message += "\nPlaying: ";
   message += server.arg(0);
   server.send(200, "text/plain", message);
-  nextUrl = ("http://192.168.1.142:2000/notifier/sound?file=" + server.arg(0));
-  playHttp("http://192.168.1.142:2000/notifier/sound?file=binary-store/bell.mp3");
+  nextUrl = ("http://192.168.1.241:2000/notifier/sound?file=" + server.arg(0));
+  playHttp("http://192.168.1.241:2000/notifier/sound?file=binary-store/bell.mp3");
 }
 
 void callback(String topic, byte *message, unsigned int length)
@@ -79,8 +79,8 @@ void callback(String topic, byte *message, unsigned int length)
       String path = doc["file"];
       if (doc.containsKey("volume"))
         out->SetGain(doc["volume"]);
-      nextUrl = ("http://192.168.1.142:2000/notifier/sound?file=" + path);
-      playHttp("http://192.168.1.142:2000/notifier/sound?file=binary-store/bell.mp3");
+      nextUrl = ("http://192.168.1.241:2000/notifier/sound?file=" + path);
+      playHttp("http://192.168.1.241:2000/notifier/sound?file=binary-store/bell.mp3");
     }
   }
 }

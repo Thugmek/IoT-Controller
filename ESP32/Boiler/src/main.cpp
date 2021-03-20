@@ -15,7 +15,7 @@ DallasTemperature sensors(&oneWire);
 int numberOfDevices;
 DeviceAddress tempDeviceAddress;
 
-const char *mqtt_server = "192.168.1.240";
+const char *mqtt_server = "192.168.1.241";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -53,7 +53,7 @@ void sendMQTTInfo()
     char buf[len + 1];
     serializeJsonPretty(doc, buf, len + 1);
 
-    client.publish("bedroom/boiler/sys", buf);
+    client.publish("boiler/sys", buf);
     timeout = millis() + 3000;
   }
 }
@@ -78,13 +78,13 @@ void loop()
   if (!client.connected())
   {
     client.connect("Boiler");
-    client.subscribe("bedroom/boiler");
+    client.subscribe("boiler");
   }
 
   if (!client.loop())
   {
     client.connect("Boiler");
-    client.subscribe("bedroom/Boiler");
+    client.subscribe("boiler");
   }
 
   sendMQTTInfo();
